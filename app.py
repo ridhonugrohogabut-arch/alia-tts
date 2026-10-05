@@ -1,38 +1,49 @@
-from flask import Flask, request, send_file, jsonify
-import io
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
-app = Flask(__name__)
+app = FastAPI(title="Alia TTS")
 
 
-@app.route("/")
-def home():
-    return jsonify({
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+class TTSRequest(BaseModel):
+    text: str
+
+
+@app.get("/")
+def root():
+    return {
         "status": "online",
         "service": "Alia TTS"
-    })
+    }
 
 
-@app.route("/tts", methods=["POST"])
-def tts():
+@app.get("/health")
+def health():
+    return {
+        "status": "ok"
+    }
 
-    data = request.get_json(silent=True) or {}
 
-    text = data.get("text", "").strip()
+@app.post("/tts")
+def tts(request: TTSRequest):
+
+    text = request.text.strip()
 
     if not text:
-        return jsonify({
-            "error": "text is required"
-        }), 400
+        return {
+            "error": "text kosong"
+        }
 
-    # TTS engine akan kita pasang di langkah berikutnya.
-    return jsonify({
+    return {
         "status": "received",
         "text": text
-    })
-
-
-if __name__ == "__main__":
-    app.run(
-        host="0.0.0.0",
-        port=7860
-    )
+    }
