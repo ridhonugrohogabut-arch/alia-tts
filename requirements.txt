@@ -1,3 +1,8 @@
+gradio
 fastapi
 uvicorn[standard]
 pydantic
+pocket-tts @ git+https://github.com/anak10thn/pocket-tts.git@indonesian
+soundfile
+scipy
+spaces
